@@ -178,8 +178,7 @@ func (d *DatabaseTransaction) RoomReceiptsAfter(ctx context.Context, roomIDs []s
 // Returns a list of events matching the requested IDs found in the database.
 // If an event is not found in the database then it will be omitted from the list.
 // Returns an error if there was a problem talking with the database.
-// Does not include any transaction IDs in the returned events.
-func (d *DatabaseTransaction) Events(ctx context.Context, eventIDs []string) ([]*rstypes.HeaderedEvent, error) {
+func (d *DatabaseTransaction) Events(ctx context.Context, device *userapi.Device, eventIDs []string, rsAPI api.SyncRoomserverAPI) ([]*rstypes.HeaderedEvent, error) {
 	streamEvents, err := d.OutputEvents.SelectEvents(ctx, d.txn, eventIDs, nil, false)
 	if err != nil {
 		return nil, err
@@ -187,7 +186,7 @@ func (d *DatabaseTransaction) Events(ctx context.Context, eventIDs []string) ([]
 
 	// We don't include a device here as we only include transaction IDs in
 	// incremental syncs.
-	return d.StreamEventsToEvents(ctx, nil, streamEvents, nil), nil
+	return d.StreamEventsToEvents(ctx, device, streamEvents, rsAPI), nil
 }
 
 func (d *DatabaseTransaction) AllJoinedUsersInRooms(ctx context.Context) (map[string][]string, error) {

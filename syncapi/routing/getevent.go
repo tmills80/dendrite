@@ -66,7 +66,7 @@ func GetEvent(
 		}
 	}
 
-	events, err := db.Events(ctx, []string{eventID})
+	events, err := db.Events(ctx, device, []string{eventID}, rsAPI)
 	if err != nil {
 		logger.WithError(err).Error("GetEvent: syncDB.Events failed")
 		return util.JSONResponse{
